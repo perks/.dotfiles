@@ -31,6 +31,8 @@ Plugin 'morhetz/gruvbox'
 Plugin 'NLKNguyen/papercolor-theme'
 Plugin 'dahu/bisectly'
 Plugin 'Valloric/YouCompleteMe'
+Plugin 'ARM9/arm-syntax-vim'
+Plugin 'xuhdev/SingleCompile'
 
 " All plugins most be loaded by this point
 call vundle#end()		" required
@@ -88,6 +90,8 @@ inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 " set osx buffer to be same as Vims
 set clipboard^=unnamed
 
+"stop annoying snap to top of block on yank
+vmap y ygv<Esc>
 
 " nmap for powerline feedback
 nmap <silent> <F1>    :set invpaste<CR>
@@ -140,7 +144,6 @@ endif
 if !has("gui_running")
    let g:gruvbox_italic=0
 endif
-"set background=dark
 colorscheme PaperColor
 let g:airline_theme='papercolor'
 
@@ -381,4 +384,27 @@ nnoremap <silent> <Leader>gb :Gblame<CR>
 nnoremap <Leader>a :Ag 
 
 let g:multi_cursor_quit_key='<C-j>'
+
+""""" ARM9 Syntax """"
+au BufNewFile,BufRead *.s,*.S set filetype=arm " arm= armv6/7ARM9/arm-syntax-vim
+
+command! -range Vis call setpos('.', [0,<line1>,0,0]) |
+                    \ exe "normal V" |
+                    \ call setpos('.', [0,<line2>,0,0])
+
+"""" Single compile """""
+nmap <F9> :SCCompile<cr>
+nmap <F10> :SCCompileRun<cr>
+let g:SingleCompile_asyncrunmode = 'auto'
+call SingleCompile#SetCompilerTemplate('nasm', 'nasm32', 'IA-32 Assembly', 'sh', '-c " nasm -f elf32 -o $(FILE_TITLE)$.o $(FILE_NAME)$ && ld -m elf_i386 $(FILE_TITLE)$.o -o $(FILE_TITLE)$"', './$(FILE_TITLE)$')
+call SingleCompile#SetCompilerTemplate('nasm', 'nasm64', 'IA-64 Assembly', 'sh', '-c " nasm -f elf64 -o $(FILE_TITLE)$.o $(FILE_NAME)$ && ld $(FILE_TITLE)$.o -o $(FILE_TITLE)$"', './$(FILE_TITLE)$')
+let g:SingleCompile_showquickfixiferror = 0
+let g:SingleCompile_usequickfix = 1
+let g:SingleCompile_showresultafterrun = 1
+let b:cppflags = '-Iinclude -lm -g'
+let b:cflags = b:cppflags
+let b:nvccflags = '-arch='.$NVCC_ARCH.' --compiler-options="'.b:cppflags.'"'
+
+"" YCM"
+let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
 

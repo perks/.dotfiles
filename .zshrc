@@ -122,3 +122,5 @@ export FZF_DEFAULT_OPTS='--color=light'
 # Load syntax for pyenv
 eval "$(pyenv init -)"
 
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting

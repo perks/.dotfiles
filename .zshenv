@@ -2,9 +2,6 @@
 # Env and Paths
 # #########
 
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
-
 # Editor
 
 export EDITOR='mvim -v'
@@ -17,7 +14,6 @@ export SBT_OPTS="-XX:+CMSClassUnloadingEnabled -XX:PermSize=256M -XX:MaxPermSize
 # Load RVM into shell session as function
 
 export PYENV_ROOT="$HOME/.pyenv"
-PATH=$PYENV_ROOT/bin:$PATH:$HOME/.rvm/bin:$PATH
 
 # Cabal and GHC
 PATH=$HOME/Library/Haskell/bin:$PATH
