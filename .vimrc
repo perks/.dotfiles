@@ -1,55 +1,33 @@
-set nocompatible	" required
-filetype off  " required
+let s:myvimdir ="~/.vim"
 
-" set runtimepath to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-" call vundle#begin('~/some/path/here')
-
-" Let Vundle manage Vundle, required
-Plugin 'gmarik/Vundle.vim'
+if !filereadable(expand(s:myvimdir . "/autoload/plug.vim"))
+  echo "Installing Vim-Plug and plugins,"
+  echo "restart Vim to finish installation."
+  sil! call mkdir(expand(s:myvimdir . "/autoload"), 'p')
+  sil! execute "!curl -fLo ".expand(s:myvimdir . "/autoload/plug.vim")
+        \ ." https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+  autocmd VimEnter * PlugInstall
+endif
 
 """"""""""""""""""""
 " User Plugins
 """"""""""""""""""""
-Plugin 'kien/ctrlp.vim'
-Plugin 'https://github.com/scrooloose/nerdcommenter.git'
-"Plugin 'https://github.com/scrooloose/nerdtree.git'
-Plugin 'bling/vim-airline'
-Plugin 'scrooloose/syntastic'
-Plugin 'tpope/vim-fugitive'
-Plugin 'airblade/vim-gitgutter'
-Plugin 'Lokaltog/vim-easymotion'
-Plugin 'rking/ag.vim'
-Plugin 'junegunn/vim-easy-align'
-Plugin 'kristijanhusak/vim-multiple-cursors'
-Plugin 'tpope/vim-markdown'
-Plugin 'shime/vim-livedown'
-Plugin 'othree/html5.vim'
-Plugin 'morhetz/gruvbox'
-Plugin 'NLKNguyen/papercolor-theme'
-Plugin 'dahu/bisectly'
-Plugin 'Valloric/YouCompleteMe'
-Plugin 'ARM9/arm-syntax-vim'
-Plugin 'xuhdev/SingleCompile'
+call plug#begin('~/.vim/plugged')
 
-" All plugins most be loaded by this point
-call vundle#end()		" required
-filetype plugin indent on	" required
+Plug 'kien/ctrlp.vim'
+Plug 'bling/vim-airline'
+Plug 'airblade/vim-gitgutter'
+Plug 'Lokaltog/vim-easymotion'
+Plug 'rking/ag.vim'
+Plug 'NLKNguyen/papercolor-theme'
+Plug 'ARM9/arm-syntax-vim'
+Plug 'benekastah/neomake'
+Plug 'junegunn/vim-easy-align'
+Plug 'Shougo/deoplete.nvim'
+Plug 'ervandew/supertab'
+Plug 'tpope/vim-unimpaired'
 
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-"
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
-
+call plug#end()
 
 """"""""""""""""""""""""""""""
 " Keybindings
@@ -88,7 +66,7 @@ endfunction
 inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 
 " set osx buffer to be same as Vims
-set clipboard^=unnamed
+set clipboard+=unnamedplus
 
 "stop annoying snap to top of block on yank
 vmap y ygv<Esc>
@@ -252,17 +230,6 @@ set wildignore+=*.eot,*.eol,*.ttf,*.otf,*.afm,*.ffil,*.fon,*.pfm,*.pfb,*.woff,*.
 """""""""""""""""""""""""""""""
 " Plugins
 """""""""""""""""""""""""""""""
-" TODO Merge the NERDTreeFind with Toggle inteilligently.
-" nnoremap <C-g> :NERDTreeToggle<cr>
-" let NERDTreeIgnore=[ '\.pyc$', '\.pyo$', '\.py\$class$', '\.obj$', '\.o$',
-                    " \ '\.so$', '\.egg$', '^\.git$', '\.cmi', '\.cmo' ]
-" let NERDTreeHighlightCursorline=1
-" let NERDTreeShowBookmarks=1
-" let NERDTreeShowFiles=1
-
-" " Put a space around comment markers
-" let g:NERDSpaceDelims = 1
-
 """"" Ctrl p """"""
 let g:ctrlp_map = '<Leader>,'
 map <Leader>. :CtrlPBuffer<CR>
@@ -324,21 +291,6 @@ set laststatus=2
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 
-"""""" Syntastic """"""
-let g:syntastic_check_on_open=0
-let g:syntastic_enable_signs=1
-let g:syntastic_mode_map = { 'mode': 'active',
-                           \ 'active_filetypes': [],
-                           \ 'passive_filetypes': ['scss', 'html'] }
-let g:syntastic_c_compiler = 'clang'
-"" Better :sign interface symbols
-let g:syntastic_error_symbol = '✗'
-let g:syntastic_warning_symbol = '!'
-""Use jshint (uses ~/.jshintrc)
-let g:syntastic_javascript_checkers = ['jshint']
-let g:syntastic_python_checkers = ['flake8']
-let g:syntastic_python_flake8_args = '--ignore="E501,E302,E261,E701,E241,E126,E127,E128,W801"'
-
 """""" Easy Motion """"""
 map <Leader> <Plug>(easymotion-prefix)
 "let g:EasyMotion_do_mapping = 0 " Disable default mappings
@@ -372,7 +324,11 @@ map  N <Plug>(easymotion-prev)
 
 """""" Easy-Align """"""
 vmap <Enter> <Plug>(EasyAlign)
-nmap <Leader>l <Plug>(EasyAlign)
+nmap <Leader>[ <Plug>(EasyAlign)
+
+"""""" ListToggle """""
+let g:lt_location_list_toggle_map = '<leader>l'
+let g:lt_quickfix_list_toggle_map = '<leader>q'
 
 
 """""" Git """"""
@@ -392,19 +348,22 @@ command! -range Vis call setpos('.', [0,<line1>,0,0]) |
                     \ exe "normal V" |
                     \ call setpos('.', [0,<line2>,0,0])
 
-"""" Single compile """""
-nmap <F9> :SCCompile<cr>
-nmap <F10> :SCCompileRun<cr>
-let g:SingleCompile_asyncrunmode = 'auto'
-call SingleCompile#SetCompilerTemplate('nasm', 'nasm32', 'IA-32 Assembly', 'sh', '-c " nasm -f elf32 -o $(FILE_TITLE)$.o $(FILE_NAME)$ && ld -m elf_i386 $(FILE_TITLE)$.o -o $(FILE_TITLE)$"', './$(FILE_TITLE)$')
-call SingleCompile#SetCompilerTemplate('nasm', 'nasm64', 'IA-64 Assembly', 'sh', '-c " nasm -f elf64 -o $(FILE_TITLE)$.o $(FILE_NAME)$ && ld $(FILE_TITLE)$.o -o $(FILE_TITLE)$"', './$(FILE_TITLE)$')
-let g:SingleCompile_showquickfixiferror = 0
-let g:SingleCompile_usequickfix = 1
-let g:SingleCompile_showresultafterrun = 1
-let b:cppflags = '-Iinclude -lm -g'
-let b:cflags = b:cppflags
-let b:nvccflags = '-arch='.$NVCC_ARCH.' --compiler-options="'.b:cppflags.'"'
+"""" Supertab """"
+let g:SuperTabDefaultCompletionType = "<c-n>"
 
-"" YCM"
-let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
+"""" Use deoplete """"
+let g:deoplete#enable_at_startup = 1
 
+""" Neomake """"
+autocmd! BufWritePost * Neomake
+let g:neomake_error_sign = {
+            \ 'text': '❯❯',
+            \ 'texthl': 'ErrorMsg',
+            \ }
+hi MyWarningMsg ctermbg=3 ctermfg=0
+let g:neomake_warning_sign = {
+            \ 'text': '❯❯',
+            \ 'texthl': 'MyWarningMsg',
+            \ }
+let g:neomake_python_enabled_makers = ['pep8']
+let g:neomale_c_enabled_makers = ['clang']

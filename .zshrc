@@ -1,5 +1,5 @@
 # I hate 256 color
-~/.vim/bundle/gruvbox/gruvbox_256palette_osx.sh
+#~/.vim/bundle/gruvbox/gruvbox_256palette_osx.sh
 
 fpath=(/usr/local/share/zsh-completions $fpath)
 
@@ -100,7 +100,7 @@ setopt auto_cd
 alias ls='ls -hGF'
 alias ll='ls -la'
 alias l.='ls -d .*'
-alias vim='mvim -v'
+alias vim='nvim'
 
 alias lnpm='PATH=$(npm bin):$PATH' # Run local npm module always
 

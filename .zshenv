@@ -4,8 +4,8 @@
 
 # Editor
 
-export EDITOR='mvim -v'
-export VISUAL='mvim -v'
+export EDITOR='vim'
+export VISUAL='vim'
 
 export NODE_PATH=/usr/local/lib/node_modules
 

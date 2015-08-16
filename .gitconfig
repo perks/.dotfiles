@@ -2,7 +2,7 @@
 	name = Chris Evans
 	email = chris.evans93@gmail.com
 [core]
-	editor = mvim -v
+	editor = nvim
 	excludesfile = /Users/Chris/.gitignore_global
 [color]
 	diff = auto
@@ -19,9 +19,3 @@
 	dump = cat-file -p
 [push]
 	default = simple
-[difftool "sourcetree"]
-	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path =
-[mergetool "sourcetree"]
-	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-	trustExitCode = true
