@@ -9,6 +9,13 @@ if !filereadable(expand(s:myvimdir . "/autoload/plug.vim"))
   autocmd VimEnter * PlugInstall
 endif
 
+function! BuildComposer(info)
+  if a:info.status != 'unchanged' || a:info.force
+    !cargo build --release
+    UpdateRemotePlugins
+  endif
+endfunction
+
 """"""""""""""""""""
 " User Plugins
 """"""""""""""""""""
@@ -26,6 +33,10 @@ Plug 'junegunn/vim-easy-align'
 Plug 'Shougo/deoplete.nvim'
 Plug 'ervandew/supertab'
 Plug 'tpope/vim-unimpaired'
+Plug 'euclio/vim-markdown-composer', { 'for' : 'Markdown', 'do': function('BuildComposer') }
+Plug 'tpope/vim-surround'
+Plug 'tomtom/tcomment_vim'
+Plug 'ehamberg/vim-cute-python', { 'branch' : 'moresymbols' }
 
 call plug#end()
 
