@@ -1,4 +1,5 @@
 let s:myvimdir ="~/.vim"
+let g:python_host_prog='/usr/local/bin/python'
 
 if !filereadable(expand(s:myvimdir . "/autoload/plug.vim"))
   echo "Installing Vim-Plug and plugins,"
@@ -9,19 +10,19 @@ if !filereadable(expand(s:myvimdir . "/autoload/plug.vim"))
   autocmd VimEnter * PlugInstall
 endif
 
-function! BuildComposer(info)
-  if a:info.status != 'unchanged' || a:info.force
-    !cargo build --release
-    UpdateRemotePlugins
-  endif
-endfunction
+" function! BuildComposer(info)
+"   if a:info.status != 'unchanged' || a:info.force
+"     !cargo build --release
+"     UpdateRemotePlugins
+"   endif
+" endfunction
 
 """"""""""""""""""""
 " User Plugins
 """"""""""""""""""""
 call plug#begin('~/.vim/plugged')
 
-Plug 'kien/ctrlp.vim'
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'bling/vim-airline'
 Plug 'airblade/vim-gitgutter'
 Plug 'Lokaltog/vim-easymotion'
@@ -33,10 +34,12 @@ Plug 'junegunn/vim-easy-align'
 Plug 'Shougo/deoplete.nvim'
 Plug 'ervandew/supertab'
 Plug 'tpope/vim-unimpaired'
-Plug 'euclio/vim-markdown-composer', { 'for' : 'Markdown', 'do': function('BuildComposer') }
+" Plug 'euclio/vim-markdown-composer', { 'do': function('BuildComposer') }
 Plug 'tpope/vim-surround'
 Plug 'tomtom/tcomment_vim'
 Plug 'ehamberg/vim-cute-python', { 'branch' : 'moresymbols' }
+Plug 'tpope/vim-fugitive'
+Plug 'tell-k/vim-autopep8'
 
 call plug#end()
 
@@ -114,6 +117,12 @@ map <silent> <C-\|> :bd<CR>
 " Location list traversal
 map <C-l>j :lnext<CR>
 map <C-l>k :lprev<CR>
+
+" Close current beuffer
+map <leader>bd :bd<cr>
+
+" Close all the things!
+map <leader>qa :qa!<cr>
 
 """"""""""""""""""""""""""""""
 " Display Options
@@ -364,6 +373,7 @@ let g:SuperTabDefaultCompletionType = "<c-n>"
 
 """" Use deoplete """"
 let g:deoplete#enable_at_startup = 1
+set shortmess+=c
 
 """ Neomake """"
 autocmd! BufWritePost * Neomake
@@ -378,3 +388,6 @@ let g:neomake_warning_sign = {
             \ }
 let g:neomake_python_enabled_makers = ['pep8']
 let g:neomale_c_enabled_makers = ['clang']
+
+""" AutoPep8 """
+let g:autopep8_disable_show_diff=1

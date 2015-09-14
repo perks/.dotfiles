@@ -1,42 +1,37 @@
-# I hate 256 color
-#~/.vim/bundle/gruvbox/gruvbox_256palette_osx.sh
+PROFILE_STARTUP=false
+if [[ "$PROFILE_STARTUP" == true ]]; then
+    # http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html
+    PS4=$'%D{%M%S%.} %N:%i> '
+    exec 3>&2 2>/tmp/startlog.$$
+    setopt xtrace prompt_subst
+fi
+# Load zgen
+source "${HOME}/.zsh/zgen/zgen.zsh"
 
-fpath=(/usr/local/share/zsh-completions $fpath)
+# Check if no init script
+if ! zgen saved; then
+  echo "Creating a zgen save"
 
-# Start prompts
-setopt prompt_subst
-# Pure Prompt
-autoload -U promptinit
-promptinit
+  # Plugins
+  zgen load zsh-users/zsh-syntax-highlighting
+  zgen load zsh-users/zsh-history-substring-search
+  zgen load mafredri/zsh-async
+  zgen load chrissicool/zsh-256color
+  # Completions
+  zgen load zsh-users/zsh-completions
 
-# Initialize colors
-# Necessary for
-#     $ echo "$fg[blue] hello world"
-# Like is uesd in zsh-colors
-autoload -U colors
-colors
+  # Theme
+  zgen load sindresorhus/pure
 
-# Default colors for listings.
-zstyle -e ':completion:*:default' list-colors 'reply=("${PREFIX:+=(#bi)($PREFIX:t)(?)*==34=00}:${(s.:.)LS_COLORS}")';
-##############################
-# Key bidings
-bindkey ";5C" forward-word
-bindkey ";5D" backward-word
+  # Save to init script
+  zgen save
+fi
 
-# Due to tmux being weird
-# http://clock.co.uk/blog/zsh-ctrl-left-arrow-outputting-5d
-bindkey "5C" forward-word
-bindkey "5D" backward-word
+autoload -U promptinit && promptinit
+prompt pure
 
-# Tab Completion
-autoload -Uz compinit
-compinit
-
-# Enable Ctrl-x-e edit command line
-autoload -U edit-command-line
-zle -N edit-command-line
-bindkey 'jk' edit-command-line
-bindkey '^xe' edit-command-line
+# autoload -Uz compinit
+# compinit
 
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' # Case Insenstive
 zstyle ':completion:*:killall:*' command 'ps -u $USER -o cmd' # Better Kill
@@ -86,6 +81,17 @@ HISTSIZE=SAVEHIST=10000
 setopt sharehistory
 setopt extendedhistory
 setopt hist_ignore_all_dups
+setopt hist_ignore_dups
+
+##############################
+# Key bidings
+bindkey ";5C" forward-word
+bindkey ";5D" backward-word
+
+# Due to tmux being weird
+# http://clock.co.uk/blog/zsh-ctrl-left-arrow-outputting-5d
+bindkey "5C" forward-word
+bindkey "5D" backward-word
 
 zmodload zsh/terminfo
 bindkey '^[[A' history-substring-search-up
@@ -93,6 +99,9 @@ bindkey '^[[B' history-substring-search-down
 
 # Auto_cd magic
 setopt auto_cd
+setopt cshjunkiequotes
+setopt correct
+setopt histignoredups
 
 #############
 # Aliases
@@ -101,26 +110,44 @@ alias ls='ls -hGF'
 alias ll='ls -la'
 alias l.='ls -d .*'
 alias vim='nvim'
+alias b='pushd +1 > /dev/null'
+alias f='pushd -0 > /dev/null'
+
+cd () {
+if [ "$*" = "" ]; then
+pushd $HOME >/dev/null
+else
+pushd "$*" >/dev/null
+fi
+}
 
 alias lnpm='PATH=$(npm bin):$PATH' # Run local npm module always
 
 killscreens () {
     screen -ls | grep Detached | cut -d. -f1 | awk '{print $1}' | xargs kill
 }
-alias ctags="`brew --prefix`/bin/ctags"
-
-source ~/.zsh/antigen-hs/init.zsh
+alias ctags="/usr/local/bin/ctags"
 
 # Start FuzzyFinder
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export FZF_DEFAULT_OPTS='--color=light'
+
+# export FZF_DEFAULT_OPTS='--color=light'
 
 # Start autojump
-[[ -s `brew --prefix`/etc/autojump.sh ]] && . `brew --prefix`/etc/autojump.sh
-
+function j() {
+  (( $+commands[brew] )) && {
+    [[ -s /usr/local/etc/autojump.sh ]] && . /usr/local/etc/autojump.sh
+    j "$@"
+  }
+}
 
 # Load syntax for pyenv
-eval "$(pyenv init -)"
+function pyenv() {
+  eval "$( command pyenv init -)"
+  pyenv "$@"
+}
 
-
-export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+if [[ "$PROFILE_STARTUP" == true ]]; then
+    unsetopt xtrace
+    exec 2>&3 3>&-
+  fi
